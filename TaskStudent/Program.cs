@@ -1,5 +1,7 @@
 ﻿using TaskStudent.Models;
 using System;
+using System.Text.RegularExpressions;
+using TaskStudent.exception;
 
 namespace TaskStudent
 {
@@ -7,7 +9,6 @@ namespace TaskStudent
     {
         static void Main(string[] args)
         {
-
             string name = "";
             string surname = "";
             int age = 0;
@@ -18,8 +19,17 @@ namespace TaskStudent
             int choice;
             do
             {
+               Starting:
+                try 
+                { 
                 Console.WriteLine("[0]-About program ");
                 choice = Convert.ToInt32(Console.ReadLine());
+                }
+                catch (FormatException) 
+                {
+                    Console.WriteLine("Only int numbers allowed");
+                    goto Starting;
+                }
                 switch (choice)
                 {
                     case 0:
@@ -65,86 +75,161 @@ namespace TaskStudent
             CheckMathPointInput(ref mathPoint);
             CheckAzLangPointInput(ref azLangPoint);
         }
-
         static void CheckName(string name)
         {
-            do
+           InputCheck:
+            try
             {
                 Console.Write("Enter name : ");
                 name = Console.ReadLine();
-            } while (String.IsNullOrEmpty(name));
+                InputCheck(name);
+                if (String.IsNullOrEmpty(name))
+                    throw new NullEmptyexception("You must enter name"); 
+            }
+            catch (Exception exception) 
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto InputCheck;
+            }
+        }
+        public static bool InputCheck(string name)
+        {
+            Regex regex = new Regex(@"^[\w'\-,.][^0-9_!¡?÷?¿/\\+=@#$%ˆ&*(){}|~<>;:[\]]{2,}$");
+            Match match = regex.Match(name);
+            if (match.Success)
+                return true;
+            else
+                throw new NullEmptyexception("dogru daxil edin");
         }
 
         static void CheckSurname(string surname)
         {
-            do
+        InputCheck:
+            try
             {
-                Console.Write("Enter surname: ");
+                Console.Write("Enter Surname : ");
                 surname = Console.ReadLine();
-            } while (String.IsNullOrEmpty(surname));
+                InputCheck(surname);
+                if (String.IsNullOrEmpty(surname))
+                    throw new NullEmptyexception("You must enter Surname");
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto InputCheck;
+            }
         }
+
 
         static void CheckEmployeeAge(int age)
         {
-            do
+        age:
+            try
             {
                 Console.Write("Enter age: ");
                 age = Convert.ToInt32(Console.ReadLine());
-                if (age < 18 || age > 70)Console.WriteLine("Can't work");
-            } while (age < 18 || age > 70);
+                if (age < 18 || age > 70) throw new NotAvaiable("You age is not compitable for work");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Only int numbers allowed");
+                goto age;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto age;
+            }
         }
 
         static void CheckSalaryWorkingHour(ref double salaryOfHour, ref double workingHour)
         {
-            do
+        salary:
+            try
             {
+
                 Console.Write("Enter monthly work hour: ");
                 workingHour = Convert.ToDouble(Console.ReadLine());
-                if (workingHour < 0 || workingHour > 246)Console.WriteLine("Montly work time must 1-246 interval");//31day working in 8 housr 246hour.I dont select
-            } while (workingHour < 0 || workingHour > 246);
-            do
-            {
+                if (workingHour < 1 || workingHour > 246) throw new  NotAvaiable("Montly work time must 1-246 interval");//31day working in 8 housr 246hour.I dont select
                 Console.Write("Enter your hourly salary: ");
                 salaryOfHour = Convert.ToDouble(Console.ReadLine());
-                if (salaryOfHour != 0&& salaryOfHour>0)Console.WriteLine($"Minumum monthly salary is 250Azn\nYou monthly salary is:{salaryOfHour * workingHour}");
-                else
-                {
-                    Console.WriteLine("Salary can't 0 or negative.!");
-                }
-            } while (salaryOfHour <= 0 || (salaryOfHour * workingHour) < 250);
+                if (salaryOfHour <= 0 || (salaryOfHour * workingHour) < 250) throw new NotAvaiable($"Minumum monthly salary is 250Azn\nYou monthly salary is:{ salaryOfHour * workingHour }");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Only int numbers allowed");
+                goto salary;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto salary;
+            }
         }
 
         static void CheckStudentAge(int age)
         {
-            do
+           age:
+            try
             {
                 Console.Write("Enter age: ");
                 age = Convert.ToInt32(Console.ReadLine());
                 if (age < 6 || age > 20)
-                    Console.WriteLine("Your age not compatible");
-            } while (age < 6 || age > 20);
+                    throw new NotAvaiable("You age is not compitable");
+            }catch (FormatException) 
+            {
+                Console.WriteLine("Only int numbers allowed");
+                goto age;
+            }
+            catch (Exception exception) 
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto age;
+            }   
         }
 
         static void CheckMathPointInput(ref double mathPoint)
         {
-            do
+        mathPoint:
+            try
             {
                 Console.Write("Enter math result : ");
                 mathPoint = Convert.ToDouble(Console.ReadLine());
                 if (mathPoint > 100 || mathPoint < 0)
-                    Console.WriteLine("Math result must be 0-100 interval");
-            } while (mathPoint > 100 || mathPoint < 0);
+                    throw new NotAvaiable("Math result must be 0-100 interval");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Only int numbers allowed");
+                goto mathPoint;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto mathPoint;
+            }
         }
 
         static void CheckAzLangPointInput(ref double azLangPoint)
         {
-            do
+        azLangPoint:
+            try
             {
                 Console.Write("Enetr Az language point: ");
                 azLangPoint = Convert.ToDouble(Console.ReadLine());
                 if (azLangPoint > 100 || azLangPoint < 0)
-                    Console.WriteLine("Az language result must be 0-100 interval");
-            } while (azLangPoint > 100 || azLangPoint < 0);
+                    throw new NotAvaiable("Az language result must be 0-100 interval");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Only int numbers allowed");
+                goto azLangPoint;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Unexpected error:  { exception.Message }");
+                goto azLangPoint;
+            }
         }
         static void StudentIsPass(double result)
         {
